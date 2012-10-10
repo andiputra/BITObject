@@ -27,7 +27,7 @@
     
     JusticeLeague *league = [[JusticeLeague alloc] init];
     STAssertNotNil(league, nil);
-    [league setPropertyValuesWithDictionary:dictionary];
+    [league setPropertyValuesWithDictionary:dictionary ignoreMissingPropertyNames:YES];
     STAssertTrue([league.superheros count] == 2, nil);
     
     NSArray *superheros = [league superheros];

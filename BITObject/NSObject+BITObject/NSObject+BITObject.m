@@ -35,29 +35,31 @@
 
 /** Returns an instance of a class, then set its property with values from the dictionary param.
  */
-- (id)classInstanceFromDictionary:(NSDictionary *)dictionary withClassName:(NSString *)className
+- (id)classInstanceFromDictionary:(NSDictionary *)dictionary withClassName:(NSString *)className ignoreMissingPropertyNames:(BOOL)shouldIgnore
 {
     // Create new instance of the class
     // Make sure class name is always in singular form
     id classInstance = [[[NSClassFromString(className) alloc] init] autorelease];
-    [classInstance setPropertyValuesWithDictionary:dictionary];
+    [classInstance setPropertyValuesWithDictionary:dictionary ignoreMissingPropertyNames:shouldIgnore];
     return classInstance;
 }
 
 /** Set a value to the object's property, by checking if the property exists first. If it doesn't, throws an exception.
  */
-- (void)setPropertyWithName:(NSString *)name withValue:(id)object
+- (void)setPropertyWithName:(NSString *)name withValue:(id)object ignoreMissingPropertyNames:(BOOL)shouldIgnore
 {
     if ([self isPropertyAvailableWithName:name]) {
         [self setValue:object forKey:name];
     } else {
-        [self throwPropertyWithNameUnavailableException:name];
+        if (!shouldIgnore) {
+            [self throwPropertyWithNameUnavailableException:name];
+        }
     }
 }
 
 /** Returns an array of class instances or base objects, like NSDictionary or NSString.
  */
-- (NSArray *)arrayOfObjectsFromArray:(NSArray *)array withClassName:(NSString *)className
+- (NSArray *)arrayOfObjectsFromArray:(NSArray *)array withClassName:(NSString *)className ignoreMissingPropertyNames:(BOOL)shouldIgnore
 {
     NSMutableArray *temp = [NSMutableArray array];
     
@@ -65,7 +67,7 @@
         if ([item isKindOfClass:[NSArray class]]) {
             // Currently not handling array within array - multidimensional array
         } else if ([item isKindOfClass:[NSDictionary class]]) {
-            id classInstance = [self classInstanceFromDictionary:item withClassName:className];
+            id classInstance = [self classInstanceFromDictionary:item withClassName:className ignoreMissingPropertyNames:shouldIgnore];
             [temp addObject:classInstance];
         } else {
             [temp addObject:item];
@@ -77,7 +79,7 @@
 
 #pragma mark - Public Methods
 
-- (void)setPropertyValuesWithDictionary:(NSDictionary *)dictionary
+- (void)setPropertyValuesWithDictionary:(NSDictionary *)dictionary ignoreMissingPropertyNames:(BOOL)shouldIgnore
 {
     for (NSString *key in [dictionary allKeys]) {   // Loop through the keys of the dictionary.
         
@@ -91,12 +93,14 @@
             
             if ([self isPropertyAvailableWithName:propertyName]) {
                 
-                NSArray *temp = [self arrayOfObjectsFromArray:object withClassName:className];  // Singularize class name
+                NSArray *temp = [self arrayOfObjectsFromArray:object withClassName:className ignoreMissingPropertyNames:shouldIgnore];  // Singularize class name
                 [self setValue:temp forKey:propertyName];   // Pluralize array property name
                 
             } else {
                 
-                [self throwPropertyWithNameUnavailableException:propertyName];
+                if (!shouldIgnore) {
+                    [self throwPropertyWithNameUnavailableException:propertyName];
+                }
                 
             }
             
@@ -104,18 +108,20 @@
             
             if ([self isPropertyAvailableWithName:propertyName]) {
                 
-                id classInstance = [self classInstanceFromDictionary:object withClassName:className];   // Singularize class name
+                id classInstance = [self classInstanceFromDictionary:object withClassName:className ignoreMissingPropertyNames:shouldIgnore];   // Singularize class name
                 [self setValue:classInstance forKey:propertyName];
                 
             } else {
                 
-                [self throwPropertyWithNameUnavailableException:propertyName];
+                if (!shouldIgnore) {
+                    [self throwPropertyWithNameUnavailableException:propertyName];
+                }
                 
             }
             
         } else {
             
-            [self setPropertyWithName:propertyName withValue:object];
+            [self setPropertyWithName:propertyName withValue:object ignoreMissingPropertyNames:shouldIgnore];
             
         }
         

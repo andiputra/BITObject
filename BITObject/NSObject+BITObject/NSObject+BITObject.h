@@ -15,7 +15,9 @@
  *  @param dictionary
  *  The dictionary that will be converted into objects.
  *
+ *  @param shouldIgnore
+ *  If shouldIgnore is YES, dictionary keys that do not have its correlated properties will be ignored. If shouldIgnore is NO, dictionary keys that do not have its correlated properties will throw an exception.
  */
-- (void)setPropertyValuesWithDictionary:(NSDictionary *)dictionary;
+- (void)setPropertyValuesWithDictionary:(NSDictionary *)dictionary ignoreMissingPropertyNames:(BOOL)shouldIgnore;
 
 @end
