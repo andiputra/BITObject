@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>superheros</key>
+	<array>
+		<dict>
+			<key>name</key>
+			<string>Batman</string>
+			<key>age</key>
+			<integer>35</integer>
+			<key>isDead</key>
+			<true/>
+			<key>powers</key>
+			<array>
+				<dict>
+					<key>name</key>
+					<string>batmobile</string>
+					<key>elements</key>
+					<array>
+						<string>metal</string>
+						<string>air</string>
+					</array>
+				</dict>
+				<dict>
+					<key>name</key>
+					<string>batarang</string>
+					<key>elements</key>
+					<array>
+						<string>metal</string>
+					</array>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Superman</string>
+			<key>age</key>
+			<integer>30</integer>
+			<key>isDead</key>
+			<false/>
+			<key>powers</key>
+			<array>
+				<dict>
+					<key>name</key>
+					<string>laser eye</string>
+					<key>elements</key>
+					<array>
+						<string>fire</string>
+						<string>metal</string>
+					</array>
+				</dict>
+				<dict>
+					<key>name</key>
+					<string>fly</string>
+					<key>elements</key>
+					<array>
+						<string>air</string>
+					</array>
+				</dict>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
