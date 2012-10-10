@@ -98,5 +98,5 @@ Now, we can start using it. First, we allocate and initialize an instance of Jus
 ``` objective-c
 JusticeLeague *league = [[[JusticeLeague alloc] init] autorelease];
 [league setPropertyValuesWithDictionary:dictionary];
+NSLog(@"%@", [[[league superheros] objectAtIndex:0] name]);	//This will be "Batman"
 ```
-
