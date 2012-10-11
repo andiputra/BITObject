@@ -63,16 +63,18 @@
 {
     NSMutableArray *temp = [NSMutableArray array];
     
-    for (id item in array) {
-        if ([item isKindOfClass:[NSArray class]]) {
+    [array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        
+        if ([obj isKindOfClass:[NSArray class]]) {
             // Currently not handling array within array - multidimensional array
-        } else if ([item isKindOfClass:[NSDictionary class]]) {
-            id classInstance = [self classInstanceFromDictionary:item withClassName:className ignoreMissingPropertyNames:shouldIgnore];
+        } else if ([obj isKindOfClass:[NSDictionary class]]) {
+            id classInstance = [self classInstanceFromDictionary:obj withClassName:className ignoreMissingPropertyNames:shouldIgnore];
             [temp addObject:classInstance];
         } else {
-            [temp addObject:item];
+            [temp addObject:obj];
         }
-    }
+        
+    }];
     
     return [[temp copy] autorelease];
 }
@@ -81,19 +83,18 @@
 
 - (void)setPropertyValuesWithDictionary:(NSDictionary *)dictionary ignoreMissingPropertyNames:(BOOL)shouldIgnore
 {
-    for (NSString *key in [dictionary allKeys]) {   // Loop through the keys of the dictionary.
+    [dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         
-        id object = [dictionary objectForKey:key];  // Get the value for the key.
         NSString *propertyName = [key lowercaseFirstCharacter]; // Lowercase the first character of the key to use it as property name.
         NSString *className = [[key uppercaseFirstCharacter] singularize];
         
-        if ([object isKindOfClass:[NSArray class]]) {
+        if ([obj isKindOfClass:[NSArray class]]) {
             
             propertyName = [propertyName pluralize];
             
             if ([self isPropertyAvailableWithName:propertyName]) {
                 
-                NSArray *temp = [self arrayOfObjectsFromArray:object withClassName:className ignoreMissingPropertyNames:shouldIgnore];  // Singularize class name
+                NSArray *temp = [self arrayOfObjectsFromArray:obj withClassName:className ignoreMissingPropertyNames:shouldIgnore];  // Singularize class name
                 [self setValue:temp forKey:propertyName];   // Pluralize array property name
                 
             } else {
@@ -104,11 +105,11 @@
                 
             }
             
-        } else if ([object isKindOfClass:[NSDictionary class]]) {
+        } else if ([obj isKindOfClass:[NSDictionary class]]) {
             
             if ([self isPropertyAvailableWithName:propertyName]) {
                 
-                id classInstance = [self classInstanceFromDictionary:object withClassName:className ignoreMissingPropertyNames:shouldIgnore];   // Singularize class name
+                id classInstance = [self classInstanceFromDictionary:obj withClassName:className ignoreMissingPropertyNames:shouldIgnore];   // Singularize class name
                 [self setValue:classInstance forKey:propertyName];
                 
             } else {
@@ -121,11 +122,11 @@
             
         } else {
             
-            [self setPropertyWithName:propertyName withValue:object ignoreMissingPropertyNames:shouldIgnore];
+            [self setPropertyWithName:propertyName withValue:obj ignoreMissingPropertyNames:shouldIgnore];
             
         }
         
-    }
+    }];
 }
 
 @end
