@@ -13,21 +13,38 @@
 #import "Superhero.h"
 #import "Power.h"
 
-@implementation BITObjectTests
+@interface BITObjectTests ()
+@property (strong, nonatomic) NSDictionary *superherosDictionary;
+@end
 
-- (void)testSetPropertyValuesWithDictionaryCompletion
+@implementation BITObjectTests
+@synthesize superherosDictionary = _superherosDictionary;
+
+- (void)setUp
 {
-    NSString *file = [[NSBundle mainBundle] pathForResource:@"Superheroes" ofType:@"plist"];
-    NSDictionary *dictionary = [NSDictionary dictionaryWithContentsOfFile:file];
-    STAssertNotNil([dictionary objectForKey:@"superheros"], nil);
-    STAssertTrue([[dictionary objectForKey:@"superheros"] isKindOfClass:[NSArray class]], nil);
+    [super setUp];
     
-    NSArray *superherosDict = [dictionary objectForKey:@"superheros"];
+    NSString *file = [[NSBundle mainBundle] pathForResource:@"Superheroes" ofType:@"plist"];
+    self.superherosDictionary = [NSDictionary dictionaryWithContentsOfFile:file];
+    STAssertNotNil([_superherosDictionary objectForKey:@"superheros"], nil);
+    STAssertTrue([[_superherosDictionary objectForKey:@"superheros"] isKindOfClass:[NSArray class]], nil);
+}
+
+- (void)tearDown
+{
+    [_superherosDictionary release], _superherosDictionary = nil;
+    [super tearDown];
+}
+
+- (void)testSetPropertyValuesWithDictionaryCompletion_IgnoreMissingPropertyValueIsYES
+{
+    NSArray *superherosDict = [_superherosDictionary objectForKey:@"superheros"];
     NSDictionary *batmanDict = [superherosDict objectAtIndex:0];
     
     JusticeLeague *league = [[JusticeLeague alloc] init];
     STAssertNotNil(league, nil);
-    [league setPropertyValuesWithDictionary:dictionary ignoreMissingPropertyNames:YES];
+    [league setPropertyValuesWithDictionary:_superherosDictionary ignoreMissingPropertyNames:YES];
+    
     STAssertTrue([league.superheros count] == 2, nil);
     
     NSArray *superheros = [league superheros];
@@ -51,6 +68,14 @@
     STAssertTrue([batmobile.elements count] == 2, nil);
     STAssertTrue([batarang.elements count] == 1, nil);
     
+    [league release];
+}
+
+- (void)testSetPropertyValuesWithDictionaryCompletion_IgnoreMissingPropertyValueIsNO
+{
+    JusticeLeague *league = [[JusticeLeague alloc] init];
+    STAssertNotNil(league, nil);
+    STAssertThrows([league setPropertyValuesWithDictionary:_superherosDictionary ignoreMissingPropertyNames:NO], nil);
     [league release];
 }
 
