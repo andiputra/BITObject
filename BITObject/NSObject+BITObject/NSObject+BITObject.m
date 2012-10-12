@@ -10,15 +10,16 @@
 #import <objc/runtime.h>
 #import "NSString+Extension.h"
 
+#define BIT_OBJ_NO_PROPERTY     @"BITObject:PropertyWithNameUnavailable"
+
 @implementation NSObject (BITObject)
 
 #pragma mark - Private Methods
 
-- (NSException *)throwPropertyWithNameUnavailableException:(NSString *)name
+- (void)throwPropertyWithNameUnavailableException:(NSString *)name forClassNamed:(NSString *)className
 {
-    return [NSException exceptionWithName:@"BITObject:PropertyWithNameUnavailable"
-                                   reason:[NSString stringWithFormat:@"Property with name: %@ doesn't exist.", name]
-                                 userInfo:nil];
+    [NSException raise:BIT_OBJ_NO_PROPERTY
+                format:@"Property %@ doesn't exist for %@ class.", name, className];
 }
 
 /** Check if property with a particular name is available for the class.
@@ -42,19 +43,6 @@
     id classInstance = [[[NSClassFromString(className) alloc] init] autorelease];
     [classInstance setPropertyValuesWithDictionary:dictionary ignoreMissingPropertyNames:shouldIgnore];
     return classInstance;
-}
-
-/** Set a value to the object's property, by checking if the property exists first. If it doesn't, throws an exception.
- */
-- (void)setPropertyWithName:(NSString *)name withValue:(id)object ignoreMissingPropertyNames:(BOOL)shouldIgnore
-{
-    if ([self isPropertyAvailableWithName:name]) {
-        [self setValue:object forKey:name];
-    } else {
-        if (!shouldIgnore) {
-            [self throwPropertyWithNameUnavailableException:name];
-        }
-    }
 }
 
 /** Returns an array of class instances or base objects, like NSDictionary or NSString.
@@ -100,7 +88,7 @@
             } else {
                 
                 if (!shouldIgnore) {
-                    [self throwPropertyWithNameUnavailableException:propertyName];
+                    [self throwPropertyWithNameUnavailableException:propertyName forClassNamed:className];
                 }
                 
             }
@@ -115,14 +103,24 @@
             } else {
                 
                 if (!shouldIgnore) {
-                    [self throwPropertyWithNameUnavailableException:propertyName];
+                    [self throwPropertyWithNameUnavailableException:propertyName forClassNamed:className];
                 }
                 
             }
             
         } else {
             
-            [self setPropertyWithName:propertyName withValue:obj ignoreMissingPropertyNames:shouldIgnore];
+            if ([self isPropertyAvailableWithName:propertyName]) {
+                
+                [self setValue:obj forKey:propertyName];
+                
+            } else {
+                
+                if (!shouldIgnore) {
+                    [self throwPropertyWithNameUnavailableException:propertyName forClassNamed:className];
+                }
+                
+            }
             
         }
         
