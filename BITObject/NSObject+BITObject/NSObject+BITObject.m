@@ -12,14 +12,16 @@
 
 #define BIT_OBJ_NO_PROPERTY     @"BITObject:PropertyWithNameUnavailable"
 
+static NSString *_CURRENT_CLASS_NAME;
+
 @implementation NSObject (BITObject)
 
 #pragma mark - Private Methods
 
-- (void)throwPropertyWithNameUnavailableException:(NSString *)name forClassNamed:(NSString *)className
+- (void)throwPropertyWithNameUnavailableException:(NSString *)name
 {
     [NSException raise:BIT_OBJ_NO_PROPERTY
-                format:@"Property %@ doesn't exist for %@ class.", name, className];
+                format:@"Property %@ doesn't exist for %@ class.", name, (_CURRENT_CLASS_NAME ? _CURRENT_CLASS_NAME : NSStringFromClass([self class]))];
 }
 
 /** Check if property with a particular name is available for the class.
@@ -40,6 +42,7 @@
 {
     // Create new instance of the class
     // Make sure class name is always in singular form
+    _CURRENT_CLASS_NAME = className;
     id classInstance = [[[NSClassFromString(className) alloc] init] autorelease];
     [classInstance setPropertyValuesWithDictionary:dictionary ignoreMissingPropertyNames:shouldIgnore];
     return classInstance;
@@ -88,7 +91,7 @@
             } else {
                 
                 if (!shouldIgnore) {
-                    [self throwPropertyWithNameUnavailableException:propertyName forClassNamed:className];
+                    [self throwPropertyWithNameUnavailableException:propertyName];
                 }
                 
             }
@@ -103,7 +106,7 @@
             } else {
                 
                 if (!shouldIgnore) {
-                    [self throwPropertyWithNameUnavailableException:propertyName forClassNamed:className];
+                    [self throwPropertyWithNameUnavailableException:propertyName];
                 }
                 
             }
@@ -117,7 +120,7 @@
             } else {
                 
                 if (!shouldIgnore) {
-                    [self throwPropertyWithNameUnavailableException:propertyName forClassNamed:className];
+                    [self throwPropertyWithNameUnavailableException:propertyName];
                 }
                 
             }
