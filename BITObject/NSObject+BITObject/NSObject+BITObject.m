@@ -21,7 +21,7 @@ static NSString *_CURRENT_CLASS_NAME;
 - (void)throwPropertyWithNameUnavailableException:(NSString *)name
 {
     [NSException raise:BIT_OBJ_NO_PROPERTY
-                format:@"Property %@ doesn't exist for %@ class.", name, (_CURRENT_CLASS_NAME ? _CURRENT_CLASS_NAME : NSStringFromClass([self class]))];
+                format:@"Property '%@' doesn't exist for '%@' class.", name, (_CURRENT_CLASS_NAME ? _CURRENT_CLASS_NAME : NSStringFromClass([self class]))];
 }
 
 /** Check if property with a particular name is available for the class.
